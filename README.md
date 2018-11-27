@@ -65,3 +65,7 @@ t['grocery_types'] = {
     }]
 }
 ```
+
+### Live example based on the above
+
+https://autocrud.jamesevans.net/db/grocery_types/
