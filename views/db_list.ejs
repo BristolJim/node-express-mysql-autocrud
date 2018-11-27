@@ -1,0 +1,15 @@
+<%- include layouts/header.ejs %>
+    <h1><%=data.rowItemTCPlural%></h1>
+    <p>
+        <a class="btn btn-primary" href="add/">Add <%=data.rowItemTC%>
+            <i class="fas fa-plus fa-sm"></i>
+        </a>
+    </p>
+    <%
+        if(data.rows.length) { %>
+        <% var table = data %>
+        <%- include layouts/db_table.ejs %>
+    <% } else { %>
+        Empty
+    <% } %>
+<%- include layouts/footer.ejs %>

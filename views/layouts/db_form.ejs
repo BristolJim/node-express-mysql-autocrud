@@ -1,0 +1,143 @@
+<% if(data.columns) { %>
+    <%
+        let action = data.inputValues['id'] ? 'edit' : 'add';
+    %>
+    <form action="/db/<%=data.table%>/<%=action%>/" method="post" class="needs-validation <%=data.table%>" data-toggle="validator">
+        <%
+            let form_groups = [];
+
+            for(let i = 0; i < data.schema.length; i++) {
+
+            let field = data.schema[i].Field;
+
+            let id = field + 'Input';
+            let name = field;
+            let label = data.columns[field].label;
+            let type = data.columns[field].inputType;
+            let value = data.inputValues[field];
+            let options = data.columns[field].options;
+            let required = data.columns[field].required;
+
+            form_groups.push(field);
+        %>
+        <div class="form-group <%=field%>">
+            <% if(type == 'hidden') { %>
+                <input
+                id="<%=id%>"
+                name="<%=name%>"
+                type="hidden"
+                value="<%=value%>"
+                class="form-control"
+                >
+            <% } else if(['text','number','date'].indexOf(type) != -1) { %>
+            <label for="<%=id%>">
+                <%=label%>
+            </label>
+            <div class="input-group">
+                <% if(data.columns[field].hasOwnProperty('prepend')) { %>
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><%=data.columns[field].prepend%></span>
+                </div>
+                <% } %>
+                <input
+                    id="<%=id%>"
+                    name="<%=name%>"
+                    type="<%=type%>"
+                    <% if(type == 'number') { %>step=".01"<% } %>
+                    value="<%=value%>"
+                    class="form-control"
+                    placeholder="Enter <%=label%>"
+                    <%=required%>
+                >
+                <% if(data.columns[field].hasOwnProperty('append')) { %>
+                <div class="input-group-append">
+                    <span class="input-group-text"><%=data.columns[field].append%></span>
+                </div>
+                <% } %>
+                </div>
+        <% } else if(data.columns[field].inputType == 'textarea') { %>
+            <label for="<%=id%>">
+                <%=label%>
+            </label>
+            <textarea
+                id="<%=id%>"
+                name="<%=name%>"
+                class="form-control"
+                placeholder="Enter <%=label%>"
+                <%=required%>
+            ><%=value%></textarea>
+            <% } else if(type == 'radio') { %>
+            <div><label><%=label%></label></div>
+                <% for(let j = 0;j < options.length; j++) { %>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input
+                    id="<%=id%><%=j%>"
+                    type="radio"
+                    class="custom-control-input"
+                    name="<%=name%>"
+                    value="<%=options[j].value%>"
+                    <% if(options[j].value == value) { %>checked<% } %>
+                >
+                <label
+                    for="<%=id%><%=j%>"
+                    class="custom-control-label"
+                ><%=options[j].option%></label>
+            </div>
+                <% } %>
+                <% } else if(type == 'select') { %>
+                    <div>
+                        <label
+                            for="<%=id%>Input"
+                            class="custom-select-label"
+                        ><%=label%></label>
+                    </div>
+                    <select class="custom-select"
+                        id="<%=field%>Input"
+                        class="custom-select"
+                        name="<%=name%>"
+                    >
+                    <% for(let j = 0; j < options.length; j++) { %>
+                        <option
+                            value="<%=options[j].value%>"
+                            <% if(options[j].value == value) { %>selected<% } %>
+                        ><%=options[j].option%></option>
+                        <% } %>
+                    </select>
+                    <% } else { %>
+            <div class="alert alert-danger">
+                <strong>Error!</strong> <%=field%>: No form input type defined for <%=type%>.
+            </div>
+            <% } %>
+        </div>
+        <% if(data.columns[field].hasOwnProperty('tableBefore')) { %>
+        <% } %>
+    <% } %>
+
+    <% if(data.hasOwnProperty('one_to_many')) {
+        for(let i = 0; i < data.one_to_many.length; i++)  {
+            let table = data.one_to_many[i].foreign_table_properties;
+
+            %><div class="form-group <%=table.table%>"><h2><%=data.one_to_many[i].foreign_table_properties.rowItemTCPlural%></h2><%
+            %><%- include db_table.ejs %></div><%
+
+            form_groups.push(table.table);
+        }
+    } %>
+
+    <% if(data.hasOwnProperty('many_to_many')) {
+        for(let i = 0; i < data.many_to_many.length; i++)  {
+            let table = data.many_to_many[i].join_table_properties;
+
+            %><div class="form-group <%=table.table%>"><h2><%=data.many_to_many[i].foreign_table_properties.rowItemTCPlural%></h2><%
+            %><%- include db_table.ejs %></div><%
+
+            form_groups.push(table.table);
+        }
+    }
+    %>
+      <script>//console.log("<%=form_groups.join("',\\n'")%>");</script>
+
+        <button type="submit" class="btn btn-primary">Save <i class="fas fa-check fa-sm"></i></button>
+        <a class="btn btn-secondary" href="../">Cancel <i class="fas fa-ban fa-sm"></i></a>
+    </form>
+<% } %>

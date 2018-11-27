@@ -1,0 +1,23 @@
+    <div class="table-responsive">
+        <table class="table table-striped table-sm <%=table.table%>">
+            <tr>
+                <% for(var i = 0; i < table.schema.length; i++) {
+                    var column = table.columns[table.schema[i].Field]
+                %>
+                <th class="<%=[table.schema[i].Field]%>"><%=column.nameTC%></th>
+                <% } %>
+                <th>Action</th>
+            </tr>
+                <% for(var i = 0; i < table.rows.length; i++) { %>
+            <tr>
+                <% for(var j = 0; j < table.schema.length; j++) { %>
+                <td class="<%=[table.schema[j].Field]%>"><%=table.rows[i][table.schema[j].Field]%></td>
+                <% } %>
+                <td>
+                    <a class="a-inside edit" href="/db/<%=table.table%>/edit/<%=table.rows[i].id%>">Edit</a> |
+                    <a class="a-inside delete" href="/db/<%=table.table%>/delete/<%=table.rows[i].id%>">Delete</a>
+                </td>
+            </tr>
+                <% } %>
+        </table>
+    </div>
